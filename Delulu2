@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Gemeinsame Bucketlist</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #f9f9f9;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #444;
+    }
+
+    input[type="text"] {
+      width: 70%;
+      padding: 10px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      padding: 8px;
+      background: #fff;
+      margin: 8px 0;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li.done {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .author {
+      font-size: 0.8em;
+      color: #aaa;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📝 Gemeinsame Bucketlist</h1>
+  
+  <input type="text" id="itemInput" placeholder="Was willst du machen?">
+  <input type="text" id="authorInput" placeholder="Dein Name">
+  <button onclick="addItem()">Hinzufügen</button>
+
+  <ul id="bucketList"></ul>
+
+  <script>
+    let list = JSON.parse(localStorage.getItem("bucketList")) || [];
+
+    function renderList() {
+      const ul = document.getElementById("bucketList");
+      ul.innerHTML = "";
+      list.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = item.done ? "done" : "";
+        li.innerHTML = `
+          <span onclick="toggleItem(${index})">${item.text} <span class="author">– ${item.author}</span></span>
+          <button onclick="removeItem(${index})">🗑️</button>
+        `;
+        ul.appendChild(li);
+      });
+      localStorage.setItem("bucketList", JSON.stringify(list));
+    }
+
+    function addItem() {
+      const text = document.getElementById("itemInput").value.trim();
+      const author = document.getElementById("authorInput").value.trim() || "Anonym";
+      if (text) {
+        list.push({ text, author, done: false });
+        document.getElementById("itemInput").value = "";
+        renderList();
+      }
+    }
+
+    function toggleItem(index) {
+      list[index].done = !list[index].done;
+      renderList();
+    }
+
+    function removeItem(index) {
+      list.splice(index, 1);
+      renderList();
+    }
+
+    // Beim Laden
+    renderList();
+  </script>
+</body>
+</html>
